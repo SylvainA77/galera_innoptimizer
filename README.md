@@ -12,21 +12,21 @@ Requirements
 
 To make this tool working, you need those elements installed:
 
-* python
-* python colorama library
-* python mysqldb library
+* bash
+* MariaDB or MySQL client
 
 If you're running Debian/Ubuntu, you can install this with this line:
-
 ```
-aptitude install python-mysqldb python-colorama
+    	apt-getinstall MariaDB-Client
 ```
+cf : https://mariadb.com/kb/en/mariadb/installing-mariadb-deb-files/#installing-mariadb-with-apt-get
 
 On CentOS 6, you can install with:
+```
+    yum install MariaDB-Client
+```
 
-    yum install -y python-setuptools MySQL-python
-    easy_install pip
-    pip install colorama argparse
+cf : https://mariadb.com/kb/en/mariadb/yum/
 
 How does it work?
 -----------------
@@ -40,11 +40,11 @@ Galera Innoptimizer is doing:
 * then validate some wsrep parameter and change them if not optimal to start switching to RSU mode
 * get the table list from the desired databases
 * for each tables:
- * checking that the flow control paused value is enough smaller to start entering RSU mode. If it's not the case, it will wait 30 sec and re-checking until the value is correct.
+ * checking that the flow control paused value is small enough to start entering RSU mode. If not, it will wait 30 sec and re-checking until the value is correct.
  * entering RSU mode
  * optimizing table
  * if partitionning detected, rebuild each of them instead of optimizing table
- * retoring TOI mode
+ * restoring TOI mode
 
 If during an optimize the Galera workload is too high on the current table, it will abord optimize and jump to the next table. You are notified of each status for each tables.
 
@@ -55,10 +55,10 @@ How to launch it?
 You can have a look at the available parameters:
 
 ```
-usage: ginnoptimizer.py [-h] -d DATABASES [-u USERNAME] [-p PASSWORD]
+usage: ginnoptimizer.sh [-h] -d DATABASES [-u USERNAME] [-p PASSWORD]
                         [-H HOSTNAME] [-f FCPMAX] [-v]
 
-Safetly run InnoDB Optimize on a single Galera node
+Safely run InnoDB Optimize on a single Galera node
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -79,7 +79,7 @@ optional arguments:
 You can then launch it like that to perform all databases with default username and password:
 
 ```
-> ./ginnoptimizer.py -d all
+> ./ginnoptimizer.sh -d all
 [+] Trying to connect to MySQL/MariaDB instance...OK
 [+] Getting all databases...OK
 [+] Checking current Galera state... 
@@ -114,9 +114,6 @@ GPL
 ChangeLog
 ---------
 
-* v0.2:
- * Adding table partitionning support (MariaDB 5.5 only for the moment, not MariaDB 10)
-
 
 * v0.1:
  * First release
@@ -126,4 +123,4 @@ Author Information
 ------------------
 
 Pierre Mavro / deimosfr
-
+Sylvain ARBAUDIE / SylvainA77
