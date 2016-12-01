@@ -122,5 +122,6 @@ ChangeLog
 Author Information
 ------------------
 
-Pierre Mavro / deimosfr
 Sylvain ARBAUDIE / SylvainA77
+
+Copyright (C) Pierre Mavro / deimosfr
