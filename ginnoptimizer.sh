@@ -30,24 +30,77 @@ function setLog {
 }
 
 function getArgs {
+  for i in "$@"
+  do
+    case $i in
+        -v|--version)
+        VERSION=1
+        ;;
+        -u=*|--user=*)
+        USER="${i#*=}"
+        ;;
+        -p=*|--password=*)
+        PASSWORD="${i#*=}"
+        ;;
+        -n=*|--nodes=*)
+        NODES="${i#*=}"
+        ;;
+        -d=*|--databases=*)
+        DATABASES="${i#*=}"
+        ;;
+        -c|--cluster)
+        CLUSTER=1
+        ;;
+        -h|--help)
+        HELP=1
+        ;;
+       *)
+             # unknown option
+       ;;
+    esac
+  done
+}
+
+function debug {
+
 }
 
 function myRequest {
 }
 
-function setPersistentCnx {
-}
-
 function checkFlowControl {
 }
 
+function waitForEmptySlaveQueue {
+        queue=1
+        until [ "$queue" -eq 0 ]; do
+            queue=$(mysql -u "$backupuser" -p"$backuppass" -ss -e "show global status like 'wsrep_local_recv_queue';" | awk '{ print $2 }')
+            sleep 10
+        done
+}
+
 function clusterDiscovery {
+        queue=1
+        until [ "$queue" -eq 0 ]; do
+            queue=$(mysql -u "$backupuser" -p"$backuppass" -ss -e "show global status like 'wsrep_local_recv_queue';" | awk '{ print $2 }')
+            sleep 10
+        done
 }
 
 function databasesDiscovery {
+        queue=1
+        until [ "$queue" -eq 0 ]; do
+            queue=$(mysql -u "$backupuser" -p"$backuppass" -ss -e "show databases;" | awk '{ print $2 }')
+            sleep 10
+        done
 }
 
 function tablesDiscovery {
+        queue=1
+        until [ "$queue" -eq 0 ]; do
+            queue=$(mysql -u "$backupuser" -p"$backuppass" -ss -e "use $database; show tables;" | awk '{ print $2 }')
+            sleep 10
+        done
 }
 
 function optimizeTable {
@@ -59,7 +112,27 @@ function setTOI {
 function setRSU {
 }
 
-function checkClusterState {
+function checkCNodeState {
 }
 
 #main
+#getArgs
+
+#checkNodeState
+
+#if allnodes ClusterDiscovery
+#else node
+  #foreach node
+    #if alldatabases databasesDiscovery
+    #else databases
+      #foreach database
+        #if alltables tablesDiscovery
+        #else tables
+          #setRSU
+          #foreach table
+            #checkFlowControl
+            #optimizeTable
+      #waitForEmptySlaveQueue
+      #setTOI
+  #waitForEmptySlaveQueue
+  #setTOI
